@@ -459,7 +459,7 @@ def generate_habit_tracker_pdf(month: int, year: int, habits_file: str, config_f
 
 # Check if there's room for a blank graphing habit to fill remaining space
     remaining_space = y_pos - margin_bottom - graphing_space_needed
-    
+
     if remaining_space > 0:
         # Calculate divisions needed to fill the remaining space
         # num_rows = divisions * 2 - 1, so divisions = (num_rows + 1) / 2
