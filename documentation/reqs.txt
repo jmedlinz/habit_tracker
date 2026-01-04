@@ -1,0 +1,103 @@
+# Habit Tracker PDF Generator - Requirements
+
+## Overview
+Python script to generate a monthly habit tracker PDF form based on a customizable habits list.
+
+## Input Requirements
+
+### Month/Year Input
+- Accept month and year via command-line argument or interactive prompt
+- Format: MM/YYYY (e.g., 11/2025)
+- Validate input format and date validity
+
+### Habits Configuration File
+- Read habits from a text file (configurable path, default: `habits.txt`)
+- File structure:
+  ```
+  # Daily Habits
+  Habit 1
+  Habit 2
+  Habit 3
+
+  # Graphing Habits
+  Habit 4, min, max
+  Habit 5, min, max
+  ```
+- Daily habits: Simple habit name (one per line)
+- Graphing habits: Habit name followed by min and max values (comma-separated)
+
+## PDF Layout Specifications
+
+### Page Setup
+- Page size: Letter (8.5" x 11")
+- Orientation: Portrait
+- Margins: 0.5 inches on all sides
+
+### Title Section
+- Display "Habit Tracker, [Month] [Year]" at the top (e.g., "Habit Tracker, November 2025")
+- Font: Bold, 14pt
+
+### Calendar Header
+- Row 1: Day abbreviations (S, M, T, W, Th, F, S) repeating for full month width
+- Row 2: Date numbers (1-28/29/30/31 based on month)
+- Use Python's `calendar` module to generate correct dates
+- Each day should be in its own column
+- No totals column - last column is the final day of the month
+
+### Daily Habits Section
+- Left column: Habit names from "Daily Habits" section
+- Remaining columns: Grid cells for each day of the month
+- Cell height: 0.3 inches (configurable)
+- Add thicker vertical separators between weekends and weekdays (e.g., between Sunday and Monday)
+- Day column width: Auto-calculated to fit page width evenly
+
+### Graphing Habits Section
+- Left column: Habit name with Y-axis scale showing min to max values
+- Y-axis shows intermediate values (configurable number of divisions)
+- Grid area: Light grey dots for manual plotting
+- Dot spacing: Even grid pattern for easy plotting
+- Height per graphing habit: 2.0 inches (configurable)
+- No vertical weekend separators in graphing section
+- Continuous horizontal grid spanning full month width
+
+### Grid Styling
+- Black borders for all cells
+- Light grey dots (RGB: 200, 200, 200) in graphing sections
+- Clear separation between daily habits and graphing habits sections
+
+## Technical Implementation
+
+### Python Libraries
+- `reportlab` for PDF generation
+- `calendar` for date handling
+- `argparse` for command-line arguments
+- `pyyaml` for configuration file
+- Standard libraries for file I/O and validation
+
+### Configuration (config.yaml)
+Layout parameters:
+- Margins (top, bottom, left, right)
+- Cell dimensions (daily_habit_height, graphing_habit_height)
+- Font specifications (family, size, title_size)
+- Colors (grid_color, dot_color, text_color)
+- Dot spacing and size
+- Y-axis divisions for graphing habits
+
+### Output
+- Generated filename: `habit_tracker_YYYY_MM.pdf` (e.g., `habit_tracker_2025_11.pdf`)
+- Save to configurable output directory (default: current directory)
+
+### Validation
+- Validate MM/YYYY format
+- Validate habits file exists and is properly formatted
+- Validate min/max values are numeric for graphing habits
+- Handle edge cases (leap years, different month lengths)
+
+### Sample Files
+- Include `habits_sample.txt` as a template
+- Include `config.yaml` with default layout parameters
+
+## Error Handling
+- Clear error messages for invalid inputs
+- Graceful handling of missing files
+- Validation feedback for malformed habits file

@@ -1,0 +1,46 @@
+# Daily Habit Tracker Configuration File
+
+# Page settings
+page:
+  size: letter  # letter or A4
+  orientation: portrait  # portrait or landscape
+  margins:
+    top: 0.5
+    bottom: 0.5
+    left: 0.5
+    right: 0.5
+
+# Font settings
+fonts:
+  family: Helvetica
+  title_size: 14
+  header_size: 6
+  habit_label_size: 9
+  day_label_size: 6
+
+# Colors (RGB values from 0-255)
+colors:
+  grid_line: [0, 0, 0]  # Black
+  dot: [200, 200, 200]  # Light grey
+  text: [0, 0, 0]  # Black
+
+# Daily habits section
+daily_habits:
+  row_height: 0.3  # Height in inches for each daily habit row
+  weekend_separator_width: 2  # Line width for weekend/weekday separators
+
+# Graphing habits section
+graphing_habits:
+  section_height: 2.0  # Height in inches for each graphing habit
+  y_axis_divisions: 5  # Number of divisions on Y-axis (including min and max)
+  dot_spacing: 0.1  # Spacing between dots in inches
+  dot_radius: 0.02  # Radius of dots in inches
+
+# Output settings
+output:
+  directory: "."  # Output directory (. for current directory)
+  filename_format: "habit_tracker_{year}_{month}.pdf"  # Format: {year} and {month} will be replaced
+
+# Input settings
+input:
+  habits_file: "habits.txt"  # Default habits file path
