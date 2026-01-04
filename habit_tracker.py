@@ -446,9 +446,9 @@ def generate_habit_tracker_pdf(month: int, year: int, habits_file: str, config_f
         section_height = num_rows * col_width
         graphing_space_needed += section_height
 
-    # Calculate remaining space for blank rows (up to 4)
+    # Calculate remaining space for blank rows (up to 5)
     available_space = y_pos - margin_bottom - graphing_space_needed
-    blank_rows_to_add = min(4, int(available_space / col_width))
+    blank_rows_to_add = min(5, int(available_space / col_width))
 
     # Add blank daily habit rows if there's room
     if blank_rows_to_add > 0:
@@ -457,15 +457,16 @@ def generate_habit_tracker_pdf(month: int, year: int, habits_file: str, config_f
             c, blank_habits, month, year, config, margin_left, y_pos, col_width, num_days
         )
 
-    # Check if there's room for a blank graphing habit (1-3 by 1s)
-    blank_graphing_divs = 3  # 1, 2, 3
-    blank_graphing_rows = blank_graphing_divs * 2 - 1
-    blank_graphing_height = blank_graphing_rows * col_width
+# Check if there's room for a blank graphing habit to fill remaining space
     remaining_space = y_pos - margin_bottom - graphing_space_needed
-
-    if remaining_space >= blank_graphing_height:
+    
+    if remaining_space > 0:
+        # Calculate divisions needed to fill the remaining space
+        # num_rows = divisions * 2 - 1, so divisions = (num_rows + 1) / 2
+        remaining_rows = int(remaining_space / col_width)
+        blank_graphing_divs = (remaining_rows + 1) // 2 if remaining_rows > 0 else 1
         # Add blank graphing habit at the end
-        graphing_habits = list(graphing_habits) + [GraphingHabit("", 1, 3, 1)]
+        graphing_habits = list(graphing_habits) + [GraphingHabit("", 1, blank_graphing_divs, 1)]
 
     # Draw graphing habits section
     if graphing_habits:
