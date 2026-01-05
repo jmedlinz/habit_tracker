@@ -14,7 +14,6 @@ page:
 fonts:
   family: Helvetica
   title_size: 14
-  header_size: 6
   habit_label_size: 9
   day_label_size: 6
 
@@ -33,7 +32,6 @@ daily_habits:
 graphing_habits:
   section_height: 2.0  # Height in inches for each graphing habit
   y_axis_divisions: 5  # Number of divisions on Y-axis (including min and max)
-  dot_spacing: 0.1  # Spacing between dots in inches
   dot_radius: 0.02  # Radius of dots in inches
 
 # Output settings

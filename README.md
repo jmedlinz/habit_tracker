@@ -81,7 +81,6 @@ Example custom spacing:
 daily_habits:
   row_height: 0.25  # Smaller rows
 graphing_habits:
-  dot_spacing: 0.15  # Wider spacing
   dot_radius: 0.025  # Larger dots
 ```
 

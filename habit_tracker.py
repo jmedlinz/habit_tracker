@@ -8,7 +8,6 @@ Generates a daily habit tracker PDF form based on a customizable habits list.
 import argparse
 import calendar
 import sys
-from datetime import datetime
 from pathlib import Path
 from typing import List, Tuple
 
@@ -23,7 +22,7 @@ class HabitTrackerConfig:
 
     def __init__(self, config_path: str = "config.yaml"):
         """Load configuration from YAML file."""
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             self.config = yaml.safe_load(f)
 
     def get(self, *keys, default=None):
@@ -46,8 +45,6 @@ class Habit:
 
 class DailyHabit(Habit):
     """Represents a daily tracking habit."""
-
-    pass
 
 
 class GraphingHabit(Habit):
@@ -107,7 +104,7 @@ def load_habits(habits_file: str) -> Tuple[List[DailyHabit], List[GraphingHabit]
     graphing_habits = []
     current_section = None
 
-    with open(habits_file, "r") as f:
+    with open(habits_file) as f:
         for line_num, line in enumerate(f, 1):
             line = line.strip()
 
@@ -165,7 +162,9 @@ def _calculate_y_axis_labels(min_val: float, max_val: float, divisions: int) -> 
     return [min_val + i * step for i in range(divisions)]
 
 
-def _draw_title(c: canvas.Canvas, month: int, year: int, config: HabitTrackerConfig, page_width: float, page_height: float):
+def _draw_title(
+    c: canvas.Canvas, month: int, year: int, config: HabitTrackerConfig, page_width: float, page_height: float
+):
     """Draw the title section."""
     month_name = calendar.month_name[month]
     title = f"Daily Habit Tracker, {month_name} {year}"
@@ -193,7 +192,6 @@ def _draw_calendar_header(
     num_days: int,
 ):
     """Draw the calendar header with day abbreviations and dates."""
-    header_size = config.get("fonts", "header_size", default=10)
     day_size = config.get("fonts", "day_label_size", default=8)
 
     # Get the first day of the month (0=Monday, 6=Sunday in calendar module)
@@ -298,7 +296,6 @@ def _draw_graphing_habits_section(
     num_days: int,
 ):
     """Draw the graphing habits section with dot grids."""
-    dot_spacing = config.get("graphing_habits", "dot_spacing", default=0.1) * inch
     dot_radius = config.get("graphing_habits", "dot_radius", default=0.02) * inch
     y_divisions = config.get("graphing_habits", "y_axis_divisions", default=5)
     habit_size = config.get("fonts", "habit_label_size", default=9)
@@ -349,7 +346,9 @@ def _draw_graphing_habits_section(
                 label_text = f"{label_val:.0f}" if label_val == int(label_val) else f"{label_val:.1f}"
                 # Right-align within the label column
                 label_width_px = c.stringWidth(label_text, "Helvetica", habit_size)
-                c.drawString(start_x + label_width - label_width_px - 0.1 * inch, label_y - 0.05 * inch, label_text)
+                c.drawString(
+                    start_x + label_width - label_width_px - 0.1 * inch, label_y - 0.05 * inch, label_text
+                )
 
         # Draw dots in grid area
         c.setFillColorRGB(dot_color[0] / 255, dot_color[1] / 255, dot_color[2] / 255)
@@ -370,7 +369,9 @@ def _draw_graphing_habits_section(
         c.line(
             start_x + label_width + grid_width, y_pos, start_x + label_width + grid_width, y_pos - section_height
         )  # Right edge
-        c.line(start_x, y_pos - section_height, start_x + label_width + grid_width, y_pos - section_height)  # Bottom
+        c.line(
+            start_x, y_pos - section_height, start_x + label_width + grid_width, y_pos - section_height
+        )  # Bottom
 
         y_pos -= section_height
 
