@@ -237,7 +237,7 @@ def _draw_daily_habits_grid(
     """Draw the daily habits grid with weekend separators."""
     row_height = col_width  # Make boxes square
     habit_size = config.get("fonts", "habit_label_size", default=9)
-    weekend_sep_width = config.get("daily_habits", "weekend_separator_width", default=2)
+    weekend_fill = config.get("colors", "weekend_fill", default=[240, 240, 240])
 
     # Calculate label column width (wider for habit names)
     label_width = 1.5 * inch
@@ -246,12 +246,25 @@ def _draw_daily_habits_grid(
     # Get first weekday to determine weekend positions
     first_weekday = calendar.monthrange(year, month)[0]
     first_weekday = (first_weekday + 1) % 7  # Convert to Sunday=0
+    weekend_columns = [day for day in range(1, num_days + 1) if (first_weekday + day - 1) % 7 in (0, 6)]
 
     y_pos = start_y
 
     # Draw habits
     c.setFont("Helvetica", habit_size)
     for habit in daily_habits:
+        # Lightly shade weekend cells before drawing grid lines
+        if weekend_columns:
+            c.setFillColorRGB(
+                weekend_fill[0] / 255,
+                weekend_fill[1] / 255,
+                weekend_fill[2] / 255,
+            )
+            for weekend_day in weekend_columns:
+                x_pos = start_x + label_width + (weekend_day - 1) * col_width
+                c.rect(x_pos, y_pos - row_height, col_width, row_height, stroke=0, fill=1)
+            c.setFillColorRGB(0, 0, 0)
+
         # Draw habit label - centered vertically
         label_y = y_pos - row_height / 2 - habit_size / 2
         c.drawString(start_x + 0.1 * inch, label_y, habit.name)
@@ -262,15 +275,7 @@ def _draw_daily_habits_grid(
         # Draw vertical lines for each day
         for day in range(num_days + 1):
             x_pos = start_x + label_width + day * col_width
-            weekday_idx = (first_weekday + day - 1) % 7
-
-            # Thicker line between Friday/Saturday and Sunday/Monday
-            if day > 0 and (weekday_idx == 0 or weekday_idx == 5):
-                c.setLineWidth(weekend_sep_width)
-                c.line(x_pos, y_pos, x_pos, y_pos - row_height)
-                c.setLineWidth(1)
-            else:
-                c.line(x_pos, y_pos, x_pos, y_pos - row_height)
+            c.line(x_pos, y_pos, x_pos, y_pos - row_height)
 
         # Draw label column separator
         c.line(start_x + label_width, y_pos, start_x + label_width, y_pos - row_height)
@@ -290,6 +295,8 @@ def _draw_graphing_habits_section(
     c: canvas.Canvas,
     graphing_habits: List[GraphingHabit],
     config: HabitTrackerConfig,
+    month: int,
+    year: int,
     start_x: float,
     start_y: float,
     col_width: float,
@@ -300,32 +307,49 @@ def _draw_graphing_habits_section(
     y_divisions = config.get("graphing_habits", "y_axis_divisions", default=5)
     habit_size = config.get("fonts", "habit_label_size", default=9)
     dot_color = config.get("colors", "dot", default=[200, 200, 200])
+    weekend_fill = config.get("colors", "weekend_fill", default=[240, 240, 240])
 
     label_width = 1.5 * inch
     grid_width = col_width * num_days
 
-    # Calculate section height based on divisions
-    # Number of rows = divisions + (divisions - 1) gaps = 2 * divisions - 1
-    num_rows = y_divisions * 2 - 1
-    # Use col_width for vertical spacing to match horizontal spacing
-    section_height = num_rows * col_width
+    first_weekday = calendar.monthrange(year, month)[0]
+    first_weekday = (first_weekday + 1) % 7  # Convert to Sunday=0
+    weekend_columns = [day for day in range(1, num_days + 1) if (first_weekday + day - 1) % 7 in (0, 6)]
 
-    y_pos = start_y
-    c.setFont("Helvetica", habit_size)
-
+    # Precompute section heights so we can shade once across the full graphing area
+    habit_sections = []
     for habit in graphing_habits:
-        # Use per-habit division_interval if specified, otherwise calculate from y_divisions
         if habit.division_interval is not None:
             y_divisions_for_habit = int((habit.max_value - habit.min_value) / habit.division_interval) + 1
         else:
             y_divisions_for_habit = y_divisions
 
-        # Calculate section height based on divisions for this habit
-        # Number of rows = divisions + (divisions - 1) gaps = 2 * divisions - 1
         num_rows = y_divisions_for_habit * 2 - 1
-        # Use col_width for vertical spacing to match horizontal spacing
         section_height = num_rows * col_width
+        habit_sections.append((habit, y_divisions_for_habit, num_rows, section_height))
 
+    total_graph_height = sum(section_height for _, _, _, section_height in habit_sections)
+
+    # Shade weekend columns once for the entire graphing stack to avoid overwriting borders between habits
+    if weekend_columns and total_graph_height > 0:
+        c.setFillColorRGB(
+            weekend_fill[0] / 255,
+            weekend_fill[1] / 255,
+            weekend_fill[2] / 255,
+        )
+        grid_start_x = start_x + label_width
+        for weekend_day in weekend_columns:
+            x_pos = grid_start_x + (weekend_day - 1) * col_width
+            c.rect(x_pos, start_y - total_graph_height, col_width, total_graph_height, stroke=0, fill=1)
+        c.setFillColorRGB(0, 0, 0)
+
+    # Reinforce the top boundary line between daily and graphing sections so shading does not soften it
+    c.line(start_x, start_y, start_x + label_width + grid_width, start_y)
+
+    y_pos = start_y
+    c.setFont("Helvetica", habit_size)
+
+    for habit, y_divisions_for_habit, num_rows, section_height in habit_sections:
         # Draw habit name (only if not blank)
         if habit.name:
             c.drawString(start_x + 0.1 * inch, y_pos - 0.2 * inch, habit.name)
@@ -458,7 +482,7 @@ def generate_habit_tracker_pdf(month: int, year: int, habits_file: str, config_f
             c, blank_habits, month, year, config, margin_left, y_pos, col_width, num_days
         )
 
-# Check if there's room for a blank graphing habit to fill remaining space
+    # Check if there's room for a blank graphing habit to fill remaining space
     remaining_space = y_pos - margin_bottom - graphing_space_needed
 
     if remaining_space > 0:
@@ -471,7 +495,17 @@ def generate_habit_tracker_pdf(month: int, year: int, habits_file: str, config_f
 
     # Draw graphing habits section
     if graphing_habits:
-        _draw_graphing_habits_section(c, graphing_habits, config, margin_left, y_pos, col_width, num_days)
+        _draw_graphing_habits_section(
+            c,
+            graphing_habits,
+            config,
+            month,
+            year,
+            margin_left,
+            y_pos,
+            col_width,
+            num_days,
+        )
 
     # Save PDF
     c.save()

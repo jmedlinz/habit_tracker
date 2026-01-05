@@ -22,11 +22,11 @@ colors:
   grid_line: [0, 0, 0]  # Black
   dot: [200, 200, 200]  # Light grey
   text: [0, 0, 0]  # Black
+  weekend_fill: [220, 220, 220]  # Slightly darker grey for weekend shading
 
 # Daily habits section
 daily_habits:
   row_height: 0.3  # Height in inches for each daily habit row
-  weekend_separator_width: 2  # Line width for weekend/weekday separators
 
 # Graphing habits section
 graphing_habits:
