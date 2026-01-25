@@ -471,27 +471,32 @@ def generate_habit_tracker_pdf(month: int, year: int, habits_file: str, config_f
         section_height = num_rows * col_width
         graphing_space_needed += section_height
 
-    # Calculate remaining space for blank rows (up to 5)
+    # Calculate remaining space for blank rows
     available_space = y_pos - margin_bottom - graphing_space_needed
-    blank_rows_to_add = min(5, int(available_space / col_width))
+    blank_rows_available = max(0, int(available_space / col_width))
 
-    # Add blank daily habit rows if there's room
+    # Add up to 3 blank rows in the upper section
+    blank_rows_to_add = min(3, blank_rows_available)
     if blank_rows_to_add > 0:
         blank_habits = [DailyHabit("") for _ in range(blank_rows_to_add)]
         y_pos = _draw_daily_habits_grid(
             c, blank_habits, month, year, config, margin_left, y_pos, col_width, num_days
         )
 
-    # Check if there's room for a blank graphing habit to fill remaining space
+    # Calculate remaining space after adding blank rows
     remaining_space = y_pos - margin_bottom - graphing_space_needed
+    remaining_rows = max(0, int(remaining_space / col_width))
 
-    if remaining_space > 0:
-        # Calculate divisions needed to fill the remaining space
-        # num_rows = divisions * 2 - 1, so divisions = (num_rows + 1) / 2
-        remaining_rows = int(remaining_space / col_width)
-        blank_graphing_divs = (remaining_rows + 1) // 2 if remaining_rows > 0 else 1
-        # Add blank graphing habit at the end
+    # If at least 4 rows remain, add a blank graphing habit
+    if remaining_rows >= 4:
+        blank_graphing_divs = (remaining_rows + 1) // 2
         graphing_habits = list(graphing_habits) + [GraphingHabit("", 1, blank_graphing_divs, 1)]
+    elif remaining_rows > 0:
+        # Otherwise, add remaining space as more blank rows in the upper section
+        blank_habits = [DailyHabit("") for _ in range(remaining_rows)]
+        y_pos = _draw_daily_habits_grid(
+            c, blank_habits, month, year, config, margin_left, y_pos, col_width, num_days
+        )
 
     # Draw graphing habits section
     if graphing_habits:
