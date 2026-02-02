@@ -23,6 +23,7 @@ colors:
   dot: [200, 200, 200]  # Light grey
   text: [0, 0, 0]  # Black
   weekend_fill: [220, 220, 220]  # Slightly darker grey for weekend shading
+  alternating_row_fill: [245, 245, 245]  # Very light grey for alternating rows
 
 # Daily habits section
 daily_habits:

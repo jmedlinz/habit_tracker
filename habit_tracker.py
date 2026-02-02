@@ -238,6 +238,7 @@ def _draw_daily_habits_grid(
     row_height = col_width  # Make boxes square
     habit_size = config.get("fonts", "habit_label_size", default=9)
     weekend_fill = config.get("colors", "weekend_fill", default=[240, 240, 240])
+    alternating_row_fill = config.get("colors", "alternating_row_fill", default=[245, 245, 245])
 
     # Calculate label column width (wider for habit names)
     label_width = 1.5 * inch
@@ -252,7 +253,16 @@ def _draw_daily_habits_grid(
 
     # Draw habits
     c.setFont("Helvetica", habit_size)
-    for habit in daily_habits:
+    for habit_idx, habit in enumerate(daily_habits):
+        # Shade alternating rows (starting with row 2, which is index 1)
+        if habit_idx % 2 == 1:  # Row 2, 4, 6, etc. (indices 1, 3, 5, etc.)
+            c.setFillColorRGB(
+                alternating_row_fill[0] / 255,
+                alternating_row_fill[1] / 255,
+                alternating_row_fill[2] / 255,
+            )
+            c.rect(start_x, y_pos - row_height, label_width + grid_width, row_height, stroke=0, fill=1)
+
         # Lightly shade weekend cells before drawing grid lines
         if weekend_columns:
             c.setFillColorRGB(
