@@ -1,5 +1,5 @@
 {
-    "cSpell.words" : [
+    "cSpell.words": [
         "APPENV",
         "applymap",
         "asctime",
@@ -143,16 +143,26 @@
         "activityBarBadge.background": "#a180fe",
         "activityBarBadge.foreground": "#15202b",
         "commandCenter.border": "#e7e7e799",
+        "commandCenter.foreground": "#e7e7e7",
         "sash.hoverBorder": "#01f941",
         "statusBar.background": "#01c634",
         "statusBar.foreground": "#e7e7e7",
         "statusBarItem.hoverBackground": "#01f941",
-        "statusBarItem.remoteBackground": "#01c634",
+        "statusBarItem.remoteBackground": "#7241fe",
         "statusBarItem.remoteForeground": "#e7e7e7",
         "titleBar.activeBackground": "#01c634",
         "titleBar.activeForeground": "#e7e7e7",
         "titleBar.inactiveBackground": "#01c63499",
-        "titleBar.inactiveForeground": "#e7e7e799"
+        "titleBar.inactiveForeground": "#e7e7e799",
+        "activityBarTop.activeBackground": "#01f941",
+        "activityBarTop.background": "#01f941",
+        "activityBarTop.foreground": "#15202b",
+        "activityBarTop.inactiveForeground": "#15202b99",
+        "statusBar.debuggingBackground": "#01c634",
+        "statusBar.debuggingForeground": "#e7e7e7",
+        "activityBar.activeBorder": "#15202b",
+        "activityBarTop.activeBorder": "#15202b",
+        "statusBar.inactiveBackground": "#01c634"
     },
     "peacock.color": "#01c634"
 }
